@@ -1,7 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class Main {
+public class JDBCConnectionProgram {
 
     // database information
     private static final String DB_URL = "jdbc:mysql://localhost:3306/jdbc";
