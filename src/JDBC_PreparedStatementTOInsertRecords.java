@@ -1,10 +1,10 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Scanner;
 
-public class JDBCProgramToInsertData {
-    // database information
+public class JDBC_PreparedStatementTOInsertRecords {// database information
     private static final String DB_URL = "jdbc:mysql://localhost:3306/jdbc";
     private static final String DB_USERNAME = "root";
     private static final String DB_PASSWORD = "root1998";
@@ -13,12 +13,12 @@ public class JDBCProgramToInsertData {
     private static Connection connection;
 
     // use to fire query(select * from student where id = 101)
-    private static Statement statement;
+    private static PreparedStatement preparedStatement;
 
     public static void main(String[] args) {
         try {
             connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            statement = connection.createStatement();
+
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter your name:");
             String name = scanner.nextLine();
@@ -28,14 +28,23 @@ public class JDBCProgramToInsertData {
             String email = scanner.nextLine();
             System.out.println("Enter salary");
             int sal = scanner.nextInt();
-            String sql = "INSERT INTO STUDENT (name,city,email,salary) values ('" + name + "','" + city + "','" + email + "','"+sal+"')";
 
-            int rowInserted = statement.executeUpdate(sql);
-            if (rowInserted > 0) {
-                System.out.println("Data inserted...");
+            String sql = "INSERT INTO STUDENT(name,city,email,salary) VALUES(?,?,?,?)";
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1,name);
+            preparedStatement.setString(2,city);
+            preparedStatement.setString(3,email);
+            preparedStatement.setInt(4,sal);
+
+            int i = preparedStatement.executeUpdate();
+            if(i > 0){
+                System.out.println("Records Inserted...");
             }
+
         } catch (Exception e) {
-            System.out.println("Data insertion failed...");
+            System.out.println("Records insertion failed");
+
             e.printStackTrace();
         }
     }
