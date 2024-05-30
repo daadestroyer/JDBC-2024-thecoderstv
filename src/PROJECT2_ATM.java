@@ -35,6 +35,7 @@ public class PROJECT2_ATM {
                     // if exit
                     System.out.println("Enter your email");
                     String email = sc.next();
+                    sc.nextLine();
                     preparedStatement = connection.prepareStatement("select * from user where email = ?");
                     preparedStatement.setString(1, email);
                     boolean res = preparedStatement.execute();
@@ -45,9 +46,9 @@ public class PROJECT2_ATM {
                         System.out.println("---------------------------");
                     } else {
                         System.out.println("Enter name");
-                        String name = sc.next();
+                        String name = sc.nextLine();
                         System.out.println("Enter city");
-                        String city = sc.next();
+                        String city = sc.nextLine();
                         System.out.println("Enter amount");
                         int amount = sc.nextInt();
 
@@ -59,11 +60,10 @@ public class PROJECT2_ATM {
 
                         int i = preparedStatement.executeUpdate();
                         if (i > 0) {
-                            System.out.println("Records Inserted...");
+                            System.out.println("Account Opened...");
                         } else {
-                            System.out.println("Records not inserted...");
+                            System.out.println("Account not Opened...");
                         }
-
                     }
                 } else if (choice == 2) {
                     System.out.println("Enter your email");
@@ -76,8 +76,11 @@ public class PROJECT2_ATM {
                         connection.prepareStatement("SELECT acct_balance from USER where email = ?");
                         preparedStatement.setString(1, email);
                         ResultSet rs = preparedStatement.executeQuery();
-                        while (rs.next())
-                            System.out.println("User account balance is : " + rs.getString("acct_balance"));
+                        while (rs.next()) {
+                            System.out.println("--------------------------------------------------------------------");
+                            System.out.println("User account balance is : " + rs.getInt("acct_balance"));
+                            System.out.println("--------------------------------------------------------------------");
+                        }
 
                     } else {
                         System.out.println("---------------------------");
@@ -94,23 +97,43 @@ public class PROJECT2_ATM {
                     if (resultSet.next()) {
                         System.out.println("Enter the amount to withdraw");
                         int amount = sc.nextInt();
-                        preparedStatement = connection.prepareStatement("UPDATE USER set acct_balance = acct_balance - ? where email = ?");
-
-                        preparedStatement.setInt(1, amount);
-                        preparedStatement.setString(2, email);
-                        int i = preparedStatement.executeUpdate();
-                        if (i > 0) {
-                            System.out.println("------------------------------------------");
-                            System.out.println("Amount " + amount + " withdraw successfully...");
-                            System.out.println("------------------------------------------");
+                        if(amount < 0){
+                            System.out.println("-----------------------------");
+                            System.out.println("Please enter a positive value");
+                            System.out.println("-----------------------------");
                         }
-                        preparedStatement = connection.prepareStatement("SELECT acct_balance from USER where email = ?");
-                        preparedStatement.setString(1, email);
-                        ResultSet rs = preparedStatement.executeQuery();
-                        while (rs.next()) {
-                            System.out.println("----------------------------------------------------------------------------");
-                            System.out.println("Your current account balance is : " + rs.getString("acct_balance"));
-                            System.out.println("----------------------------------------------------------------------------");
+                        else{
+                            connection.prepareStatement("SELECT acct_balance from USER where email = ?");
+                            preparedStatement.setString(1, email);
+                            ResultSet rsSet = preparedStatement.executeQuery();
+                            rsSet.next();
+                            int acctBalance = rsSet.getInt("acct_balance");
+
+                            if(acctBalance > 0){
+                                preparedStatement = connection.prepareStatement("UPDATE USER set acct_balance = acct_balance - ? where email = ?");
+
+                                preparedStatement.setInt(1, amount);
+                                preparedStatement.setString(2, email);
+                                int i = preparedStatement.executeUpdate();
+                                if (i > 0) {
+                                    System.out.println("------------------------------------------");
+                                    System.out.println("Amount " + amount + " withdraw successfully...");
+                                    System.out.println("------------------------------------------");
+                                }
+                                preparedStatement = connection.prepareStatement("SELECT acct_balance from USER where email = ?");
+                                preparedStatement.setString(1, email);
+                                ResultSet rs = preparedStatement.executeQuery();
+                                while (rs.next()) {
+                                    System.out.println("----------------------------------------------------------------------------");
+                                    System.out.println("Your current account balance is : " + rs.getString("acct_balance"));
+                                    System.out.println("----------------------------------------------------------------------------");
+                                }
+                            }
+                            else{
+                                System.out.println("-----------------------------------------------");
+                                System.out.println("Your account balance is zero please add funds !");
+                                System.out.println("-----------------------------------------------");
+                            }
                         }
                     } else {
                         System.out.println("---------------------------");
@@ -134,7 +157,7 @@ public class PROJECT2_ATM {
                         int i = preparedStatement.executeUpdate();
                         if (i > 0) {
                             System.out.println("------------------------------------------");
-                            System.out.println("Amount " + amount + " withdraw successfully...");
+                            System.out.println("Amount " + amount + " submitted successfully...");
                             System.out.println("------------------------------------------");
                         }
                         preparedStatement = connection.prepareStatement("SELECT acct_balance from USER where email = ?");
