@@ -146,7 +146,7 @@ public class PROJECT2_ATM {
                             System.out.println("----------------------------------------------------------------------------");
                         }
                     } else {
-                        System.out.println("---------------------------");
+                        System.out.println("----------------------------");
                         System.out.println("user account not found");
                         System.out.println("---------------------------");
                     }
